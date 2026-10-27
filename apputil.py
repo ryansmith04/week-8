@@ -23,7 +23,7 @@ class MarkovText(object):
 
     def _random_term(self):
         """Pick a random starting term from the dictionary."""
-        
+
         return np.random.choice(list(self.term_dict.keys()))
 
     def _next_term(self, current):
@@ -34,25 +34,23 @@ class MarkovText(object):
         # if it only appears once) is a dead end, so start fresh
         if not followers:
             return self._random_term()
- 
+
         return np.random.choice(followers)
 
     def generate(self, seed_term=None, term_count=15):
         """Generate `term_count` terms of text, starting at `seed_term`."""
         if self.term_dict is None:
             self.get_term_dict()
- 
         if seed_term is None:
             current = self._random_term()
         elif seed_term in self.corpus.split():
             current = seed_term
         else:
             raise ValueError(f"{seed_term!r} is not in the corpus.")
- 
+
         terms = [current]
         while len(terms) < term_count:
             current = self._next_term(current)
             terms.append(current)
 
         return " ".join(terms)
-    
