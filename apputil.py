@@ -15,21 +15,22 @@ class MarkovText(object):
         term_dict = defaultdict(list)
         for current, next_word in zip(tokens[:-1], tokens[1:]):
             term_dict[current].append(next_word)
-        # convert to a normal dict so looking up a missing word
-        # doesn't add it
-        self.term_dict = dict(term_dict)
+        # zip stops one word early, so the last token never becomes a
+        # key. Add it with an empty list so every token is a key.
+        if tokens:
+            term_dict.setdefault(tokens[-1], [])
 
+        self.term_dict = dict(term_dict)
         return self.term_dict
 
     def _random_term(self):
         """Pick a random starting term from the dictionary."""
-
         return np.random.choice(list(self.term_dict.keys()))
 
     def _next_term(self, current):
         """Pick the next term at random from the words that follow it."""
         followers = self.term_dict.get(current)
- 
+
         # a word with no followers (e.g., the last word of the corpus,
         # if it only appears once) is a dead end, so start fresh
         if not followers:
@@ -43,7 +44,7 @@ class MarkovText(object):
             self.get_term_dict()
         if seed_term is None:
             current = self._random_term()
-        elif seed_term in self.corpus.split():
+        elif seed_term in self.term_dict:
             current = seed_term
         else:
             raise ValueError(f"{seed_term!r} is not in the corpus.")
