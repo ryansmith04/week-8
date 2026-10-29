@@ -30,12 +30,10 @@ class MarkovText(object):
     def _next_term(self, current):
         """Pick the next term at random from the words that follow it."""
         followers = self.term_dict.get(current)
-
         # a word with no followers (e.g., the last word of the corpus,
         # if it only appears once) is a dead end, so start fresh
         if not followers:
             return self._random_term()
-
         return np.random.choice(followers)
 
     def generate(self, seed_term=None, term_count=15):
@@ -53,5 +51,4 @@ class MarkovText(object):
         while len(terms) < term_count:
             current = self._next_term(current)
             terms.append(current)
-
         return " ".join(terms)
